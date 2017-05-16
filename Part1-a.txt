@@ -1,0 +1,34 @@
+ Assignment 2 ~ COMP1927 17s1
+  Part 1-a 
+  Calculate PageRanks
+  =============================
+  Written by Mehri Amin & Simon Shields
+  =============================
+  Algorithm:
+    - ReadData file to collect files i.e. GetCollection()
+    - Graph struct for Adjacency List Representation i.e. GetGraph()
+    - #include "readData.c"
+  
+    - In this file:
+      get args: d, diffPR, maxIterations
+      
+      GetCollection()
+      GetGraph()
+      List_URLs_PageRanks = calculatePageRank(g,d,diffPR,maxIterations)
+      Order(List_URLs_PageRanks) i.e. mergesort
+      Output Order(List_URLs_PageRanks) > "pagerankList.txt"
+    - Equations:
+        PR[i] = (1-d)/n + d*sum;
+        diff += fabs(PR[i] - PR[i-1]); 
+  =============================
+  Make sure arguments are d - damping factor, diffpR - difference in PageRank sum,
+  and maxIterations - maximum iterations. 
+  Make a function to calculate PageRank for every URL.
+  Mergesort PageRanks in descending order to a file named pagerankList.txt. 
+    Include outgoing degrees and PageRank value.
+  =============================
+  So files needed:
+    - Graph.c
+    - readData.c
+    - pagerank.c
+    - mergesort.c 
