@@ -1,20 +1,26 @@
 // graph.c ... Graph of strings (adjacency matrix)
 // Written by John Shepherd, September 2015
 // taken from lab 8: https://cgi.cse.unsw.edu.au/~cs1927/17s1/labs/week08/
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
 #include "graph.h"
+
 #define strEQ(g,t) (strcmp((g),(t)) == 0)
+
 typedef unsigned char Num;
+
 typedef struct GraphRep {
-int   nV;
-int   maxV;
-char  **vertex;
+	int   nV;
+	int   maxV;
+	char  **vertex;
 	Num   **edges;
 } GraphRep;
+
 // Function signatures
+
 Graph newGraph();
 void  disposeGraph(Graph);
 int   addEdge(Graph,char *,char *);
@@ -22,15 +28,17 @@ int   nVertices(Graph);
 int   isConnected(Graph, char *, char *);
 void  showGraph(Graph,int);
 int outDegree(Graph, char *);
+
 static int vertexID(char *, char **, int);
 int addVertex(char *, char **, int);
+
 // newGraph()
 // - create an initially empty Graph
 Graph newGraph(int maxV)
 {
 	Graph new = malloc(sizeof(GraphRep));
-assert(new != NULL);
-int i, j;
+	assert(new != NULL);
+	int i, j;
 	new->nV = 0;
 	new->maxV = maxV;
 	new->vertex = malloc(maxV*sizeof(char *));
@@ -60,6 +68,8 @@ void disposeGraph(Graph g)
 		free(g->edges[i]);
 	}
 	free(g->edges);
+	free(g->vertex);
+	free(g);
 }
 
 // addEdge(Graph,Src,Dest)
@@ -184,25 +194,3 @@ int addVertex(char *str, char **names, int N)
 	names[N] = strdup(str);
 	return N;
 }
-Raw
- graph.h
-// graph.h ... Interface to Graph of strings
-// Written by John Shepherd, September 2015
-// Taken from lab 8: https://cgi.cse.unsw.edu.au/~cs1927/17s1/labs/week08/
-
-#ifndef GRAPH_H
-#define GRAPH_H
-
-typedef struct GraphRep *Graph;
-
-// Function signatures
-
-Graph newGraph(int);
-void  disposeGraph(Graph);
-int   addEdge(Graph,char *,char *);
-int   nVertices(Graph);
-int   isConnected(Graph, char *, char *);
-void  showGraph(Graph,int);
-int outDegree(Graph, char *);
-
-#endif
