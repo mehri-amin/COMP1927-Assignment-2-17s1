@@ -16,6 +16,5 @@ int   nVertices(Graph);
 int   isConnected(Graph, char *, char *);
 void  showGraph(Graph,int);
 int outDegree(Graph, char *);
-
 #endif
 

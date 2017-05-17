@@ -15,8 +15,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "mergesort.h"	
-#include "readData.h"
+#include "mergeSort.h"	
+#include "readData.c"
 #include "graph.h"
 
 #define EPSILON 1E-6
@@ -30,18 +30,25 @@ typedef struct URL{
 void calculatePageRank(Graph, float, float, int);
 void OutputToFile(Graph, float *);
 
-static int CompareURLs(const void *a, const void *b){
-	if(((nPageRank)b)->PR - ((nPageRank)a)->PR < EPSILON) return -1;
-	else return 0;
+static int ComparePageRank(void *a, void *b){
+	if(((URL)b)->pagerank - ((URL)a)->pagerank > EPSILON) return 0;
+	else return 1;
+}
 
-	if((((nPageRank)b)->nOutgoing - ((nPageRank)a)->nOutgoing) < 0) return -1;
-	else return 0;
+static int CompareOutgoing(void *a, void *b){ 
+
+	if((((URL)b)->nOutgoing - ((URL)a)->nOutgoing) > 0) return 0;
+	else return 1;
 }
 
 int main(int argc, char *argv[]){
 	
 	// get args: d, diffPR, maxIterations
-	assert(argv == 4)
+	if(argc < 4){
+		printf("Usage: %s d, diffPR, maxIterations\n", argv[0]);
+		exit(0);
+	}
+
 	float d, diffPR;
 	int maxIterations;
 	d = atof(argv[1]);
@@ -49,67 +56,68 @@ int main(int argc, char *argv[]){
 	maxIterations = atoi(argv[3]);
 	
 	// GetCollection & GetGraph
-	List List_of_Urls = newList(); 
-	GetCollection(List_of_Urls);
-	Graph g = newGraph(listLength(List_of_Urls));
-	GetGraph(List_of_Urls);
+	List urls = GetCollection(); 
+	showList(urls);
+	Graph g = GetGraph(urls);
+	showGraph(g,0);
 
-	calculatePageRank(g,d,diffpR,maxIterations);
+	calculatePageRank(g,d,diffPR,maxIterations);
 
-	OutputToFile(g, PageRank);	
-
+	destroyList(urls);
 	disposeGraph(g);
-	destroyList(List List_of_Urls);
 	
-	return 1;
+	return EXIT_SUCCESS;
 }
 
 void calculatePageRank(Graph g, float d, float diffPR, int maxIterations){
 	int i, j, N = nVertices(g);
-	float sum, PR[N];
+	float sum, diff, PR[N];
 	
+	// for each url PR[i] in the collection	
 	for(i=0; i<N; i++)
-		PR[i] = 1/N; //default
+		PR[i] = 1/N; 
 	
 	int iteration = 0;
 	diff = diffPR; // to enter the following loop
 
 	while(iteration < maxIterations && diff >= diffPR)
-			
+		
 		iteration++;
-		for(i=0; i<N; i++){
-		sum = 0;
-			for(j=0; j<N; j++){
-			if(isConnected(g, g->vertex[i], g->vertex[j]));
-			sum += PR[j] / nEdges(g,j);
+		for(i=0; i<N; i++){ //for each url
+		sum = 0; // initialize sum
+			for(j=0; j<N; j++){ //for each page pointing to PR[i]
+			if(isConnected(g,j,i); // check if there is a connection between page i and j
+			sum += PR[j] / outDegree(g,j); // increment sum
 			}
-		PR[i] = (1-d)/N + d*sum;
-		diff += fabs(PR[i] - PR[i-1]);
+		PR[i] = (1-d)/N + d*sum; // add dampening factor
+		diff += fabs(PR[i] - PR[i-1]); // convergence is assumed
 		}
 
+	OutputToFile(g, PR);	
 }
 
-void OutputToFile(Graph g, float *PageRank){
+void OutputToFile(Graph g, float *PR){
 	int i, N=nVertices(g);
-	URL PageRanks[];
+	URL array[N]; // array of pageranks
 	
 	for(i=0; i<N; i++){
 		URL new = malloc(sizeof(URL));
 		new->pagerank = PR[i];
-		new->nOutgoing = nEdges(g,i);
+		new->nOutgoing = outDegree(g,i);
 		new->name = strdup(g->vertex[i]);
-		PageRanks[i] = new;
+		array[i] = new;
 	}
 
-	mergesort((void*PageRanks, 0, nVertices(g)-1, sizeof(URL), CompareURLs);
-	
+	mergeSort((void*)array, 0, nVertices(g)-1, sizeof(URL), CompareOutgoing);		
+	mergeSort((void*)array, 0, nVertices(g)-1, sizeof(URL), ComparePageRank);
+
 	FILE*fp;
 	if((fp = fopen("pagerankList.txt","w")) != NULL) {
 		for(i=0; i<N; i++){
-		printf("%s, %d, %.8f\n", PageRanks[i]->name, PageRanks[i]->nOutgoing, PageRanks[i]->PR);
-		fprintf(fp, "%s, %d, %.8f\n", PageRanks[i]->name, PageRanks[i]->nOutgoing, PageRanks[i]->PR);
-		free(PageRanks[i]->name);
-		free(PageRanks[i]);
+		printf("%s, %d, %.8f\n", array[i]->name, array[i]->nOutgoing, array[i]->pagerank);
+		fprintf(fp, "%s, %d, %.8f\n", array[i]->name, array[i]->nOutgoing, array[i]->pagerank);
+		free(array[i]->name);
+		free(array[i]);
 		}
 	fclose(fp);
 	}
