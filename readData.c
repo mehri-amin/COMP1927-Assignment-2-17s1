@@ -1,75 +1,12 @@
+#include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
+#include "BSTree.h"
 #include "graph.h"
 #include "readData.h"
-// Linked List ADT
-/*
-typedef struct Node {
-	char *val;
-	struct Node *next;
-} *Node;
-
-typedef struct ListHead {
-	struct Node *head;
-	int length;
-
-} *List;
-*/
-Node newNode(char *val) {
-	struct Node *n = malloc(sizeof(struct Node));
-	n->val = strdup(val);
-	n->next = NULL;
-	return n;
-}
-
-char *nodeValue(Node n) {
-	return n->val;
-}
-
-List newList() {
-	List l = calloc(1, sizeof(struct ListHead));
-	l->head = NULL;
-	return l;
-}
-
-void destroyList(List l) {
-	Node cur = l->head;
-	while (cur != NULL) {
-		Node tmp = cur;
-		free(cur->val);
-		cur = cur->next;
-		free(tmp);
-	}
-	free(l);
-}
-
-Node next(List l, Node n) {
-	if (n == NULL)
-		return l->head;
-	return n->next;
-}
-
-void listPrepend(List l, Node n) {
-	n->next = l->head;
-	l->head = n;
-	l->length++;
-}
-
-int listLength(List l) {
-	return l->length;
-}
-
-void showList(List l) {
-	Node n = NULL;
-	printf("list(length=%d)", l->length);
-	while ((n = next(l, n)) != NULL) {
-		printf(", %s", n->val);
-	}
-	printf("\n");
-}
-
+#include "llist.h"
 
 List GetCollection() {
 	FILE *f = fopen("collection.txt", "r");
@@ -150,8 +87,83 @@ Graph GetGraph(List urls) {
 	}
 	return g;
 }
-/*
-int main(int argc, char *argv[]) {
+
+void strlower(char *str) {
+	int len = strlen(str);
+	for (int i = 0; i < len; i++) {
+		str[i] = tolower(str[i]);
+	}
+}
+
+List GetWords(char *url) {
+	int len = strlen(url) + 5;
+	char *fname = malloc(sizeof(char) * len);
+	snprintf(fname, len, "%s.txt", url);
+
+	FILE *f = fopen(fname, "r");
+	if (f == NULL) {
+		printf("Couldn't open '%s'\n", fname);
+		return NULL;
+	}
+	free(fname);
+
+	char *buf = NULL;
+	size_t buflen = 0;
+
+	while (getline(&buf, &buflen, f) != -1) {
+		if (strstr(buf, "#start Section-2") == buf) {
+			break;
+		}
+	}
+
+	free(buf);
+
+	buf = NULL;
+	buflen = 0;
+
+	List res = newList();
+	while (getline(&buf, &buflen, f) != -1) {
+		if (strstr(buf, "#end Section-2") == buf) {
+			// end of section
+			break;
+		}
+		char *entry = strtok(buf, " ");
+		while (entry != NULL) {
+			if (entry[0] != '\n') {
+				strlower(entry);
+				if (!listHasElement(res, entry))
+					listPrepend(res, newNode(entry));
+			}
+			entry = strtok(NULL, " ");
+		}
+	}
+	free(buf);
+	fclose(f);
+
+	return res;
+}
+
+BSTree GetInvertedList(List urls) {
+	BSTree t = newBSTree();
+	Node n = NULL;
+	while ((n = next(urls, n)) != NULL) {
+		// get words
+		List words = GetWords(nodeValue(n));
+		Node w = NULL;
+		while ((w = next(words, w)) != NULL) {
+			List vals = BSTreeFind(t, nodeValue(w));
+			if (vals == NULL) {
+				vals = newList();
+				listPrepend(vals, newNode(nodeValue(n)));
+				BSTreeInsert(t, nodeValue(w), vals);
+			} else {
+				listPrepend(vals, newNode(nodeValue(w)));
+			}
+		}
+	}
+}
+
+/*int main(int argc, char *argv[]) {
 	List urls = GetCollection();
 	showList(urls);
 	Graph g = GetGraph(urls);

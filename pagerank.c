@@ -1,7 +1,7 @@
 /* pagerank.c
 
 	- Get args : d, diffPR, maxIterations
-	
+
 	- GetCollection
 	- GetGraph
 
@@ -15,8 +15,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "myMergeSort.h"	
-#include "readData.c"
+#include <string.h>
+#include "myMergeSort.h"
+#include "readData.h"
 #include "graph.h"
 
 #define EPSILON 1E-6
@@ -35,14 +36,14 @@ static int ComparePageRank(void *a, void *b){
 	else return 1;
 }
 
-static int CompareOutgoing(void *a, void *b){ 
+static int CompareOutgoing(void *a, void *b){
 
 	if((((URL)b)->nOutgoing - ((URL)a)->nOutgoing) > 0) return 0;
 	else return 1;
 }
 
 int main(int argc, char *argv[]){
-	
+
 	// get args: d, diffPR, maxIterations
 	if(argc < 4){
 		printf("Usage: %s d, diffPR, maxIterations\n", argv[0]);
@@ -54,9 +55,9 @@ int main(int argc, char *argv[]){
 	d = atof(argv[1]);
 	diffPR = atof(argv[2]);
 	maxIterations = atoi(argv[3]);
-	
+
 	// GetCollection & GetGraph
-	List urls = GetCollection(); 
+	List urls = GetCollection();
 	showList(urls);
 	Graph g = GetGraph(urls);
 	showGraph(g,0);
@@ -65,23 +66,23 @@ int main(int argc, char *argv[]){
 
 	destroyList(urls);
 	disposeGraph(g);
-	
+
 	return EXIT_SUCCESS;
 }
 
 void calculatePageRank(Graph g, float d, float diffPR, int maxIterations){
 	int i, j, N = nVertices(g);
 	float sum, diff, PR[N];
-	
-	// for each url PR[i] in the collection	
+
+	// for each url PR[i] in the collection
 	for(i=0; i<N; i++)
-		PR[i] = 1/N; 
-	
+		PR[i] = 1/N;
+
 	int iteration = 0;
 	diff = diffPR; // to enter the following loop
 
 	while(iteration < maxIterations && diff >= diffPR)
-		
+
 		iteration++;
 		for(i=0; i<N; i++){ //for each url
 		sum = 0; // initialize sum
@@ -93,13 +94,13 @@ void calculatePageRank(Graph g, float d, float diffPR, int maxIterations){
 		diff += fabs(PR[i] - PR[i-1]); // convergence is assumed
 		}
 	}
-	OutputToFile(g, PR);	
+	OutputToFile(g, PR);
 }
 
 void OutputToFile(Graph g, float *PR){
 	int i, N=nVertices(g);
 	URL array[N]; // array of pageranks
-	
+
 	for(i=0; i<N; i++){
 		URL new = malloc(sizeof(URL));
 		new->pagerank = PR[i];
@@ -108,7 +109,7 @@ void OutputToFile(Graph g, float *PR){
 		array[i] = new;
 	}
 
-	myMergeSort((void*)array, 0, nVertices(g)-1, sizeof(URL), CompareOutgoing);		
+	myMergeSort((void*)array, 0, nVertices(g)-1, sizeof(URL), CompareOutgoing);
 	myMergeSort((void*)array, 0, nVertices(g)-1, sizeof(URL), ComparePageRank);
 
 	FILE*fp;
