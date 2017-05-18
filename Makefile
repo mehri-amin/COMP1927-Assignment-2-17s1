@@ -1,8 +1,8 @@
 CC = gcc
 CFLAGS = -Wall -Werror -g
 
-all: pagerank.o graph.o myMergeSort.o readData.o
-	$(CC) $(CFLAGS) -o pagerank pagerank.o graph.o myMergeSort.o readData.o
+all: pagerank.o graph.o myMergeSort.o readData.o llist.o BSTree.o
+	$(CC) $(CFLAGS) -o pagerank pagerank.o graph.o myMergeSort.o readData.o llist.o BSTree.o
 
 readData: readData.o graph.o llist.o BSTree.o
 	$(CC) -o readData readData.o graph.o llist.o BSTree.o

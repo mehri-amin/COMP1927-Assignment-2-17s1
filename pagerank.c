@@ -18,6 +18,7 @@
 #include <string.h>
 #include "myMergeSort.h"
 #include "readData.h"
+#include "llist.h"
 #include "graph.h"
 
 #define EPSILON 1E-6
@@ -81,17 +82,18 @@ void calculatePageRank(Graph g, float d, float diffPR, int maxIterations){
 	int iteration = 0;
 	diff = diffPR; // to enter the following loop
 
-	while(iteration < maxIterations && diff >= diffPR)
+	while(iteration < maxIterations && diff >= diffPR) {
 
 		iteration++;
 		for(i=0; i<N; i++){ //for each url
-		sum = 0; // initialize sum
+			sum = 0; // initialize sum
 			for(j=0; j<N; j++){ //for each page pointing to PR[i]
-			if(isConnected(g,g->vertex[j],g->vertex[i])){ // check if there is a connection between page i and j
-			sum += PR[j] / outDegree(g,g->vertex[j]); // increment sum
+				if(isConnected(g,g->vertex[j],g->vertex[i])){ // check if there is a connection between page i and j
+					sum += PR[j] / outDegree(g,g->vertex[j]); // increment sum
+				}
+				PR[i] = (1-d)/N + d*sum; // add dampening factor
+				diff += fabs(PR[i] - PR[i-1]); // convergence is assumed
 			}
-		PR[i] = (1-d)/N + d*sum; // add dampening factor
-		diff += fabs(PR[i] - PR[i-1]); // convergence is assumed
 		}
 	}
 	OutputToFile(g, PR);
@@ -115,11 +117,11 @@ void OutputToFile(Graph g, float *PR){
 	FILE*fp;
 	if((fp = fopen("pagerankList.txt","w")) != NULL) {
 		for(i=0; i<N; i++){
-		printf("%s, %d, %.8f\n", array[i]->name, array[i]->nOutgoing, array[i]->pagerank);
-		fprintf(fp, "%s, %d, %.8f\n", array[i]->name, array[i]->nOutgoing, array[i]->pagerank);
-		free(array[i]->name);
-		free(array[i]);
+			printf("%s, %d, %.8f\n", array[i]->name, array[i]->nOutgoing, array[i]->pagerank);
+			fprintf(fp, "%s, %d, %.8f\n", array[i]->name, array[i]->nOutgoing, array[i]->pagerank);
+			free(array[i]->name);
+			free(array[i]);
 		}
-	fclose(fp);
+		fclose(fp);
 	}
 }

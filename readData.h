@@ -2,7 +2,7 @@
 #define READDATA_H
 
 #include "graph.h"
-
+#include "llist.h"
 List GetCollection();
 
 List GetOutgoingUrls(char *);

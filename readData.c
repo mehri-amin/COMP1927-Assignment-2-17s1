@@ -161,6 +161,7 @@ BSTree GetInvertedList(List urls) {
 			}
 		}
 	}
+	return NULL; // TODO
 }
 
 /*int main(int argc, char *argv[]) {
