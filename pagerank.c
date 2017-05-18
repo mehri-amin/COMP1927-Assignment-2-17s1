@@ -86,13 +86,13 @@ void calculatePageRank(Graph g, float d, float diffPR, int maxIterations){
 		for(i=0; i<N; i++){ //for each url
 		sum = 0; // initialize sum
 			for(j=0; j<N; j++){ //for each page pointing to PR[i]
-			if(isConnected(g,j,i); // check if there is a connection between page i and j
-			sum += PR[j] / outDegree(g,j); // increment sum
+			if(isConnected(g,g->vertex[j],g->vertex[i])){ // check if there is a connection between page i and j
+			sum += PR[j] / outDegree(g,g->vertex[j]); // increment sum
 			}
 		PR[i] = (1-d)/N + d*sum; // add dampening factor
 		diff += fabs(PR[i] - PR[i-1]); // convergence is assumed
 		}
-
+	}
 	OutputToFile(g, PR);	
 }
 
@@ -103,7 +103,7 @@ void OutputToFile(Graph g, float *PR){
 	for(i=0; i<N; i++){
 		URL new = malloc(sizeof(URL));
 		new->pagerank = PR[i];
-		new->nOutgoing = outDegree(g,i);
+		new->nOutgoing = outDegree(g,g->vertex[i]);
 		new->name = strdup(g->vertex[i]);
 		array[i] = new;
 	}
