@@ -1,11 +1,16 @@
 CC = gcc
 CFLAGS = -Wall -Werror -g
 
-all: pagerank.o graph.o myMergeSort.o readData.o llist.o BSTree.o
+all: pagerank readData
+
+pagerank: pagerank.o graph.o myMergeSort.o readData.o llist.o BSTree.o
 	$(CC) $(CFLAGS) -o pagerank pagerank.o graph.o myMergeSort.o readData.o llist.o BSTree.o
 
-readData: readData.o graph.o llist.o BSTree.o
-	$(CC) -o readData readData.o graph.o llist.o BSTree.o
+readData: readDataTest.o readData.o graph.o llist.o BSTree.o
+	$(CC) -o readData readDataTest.o readData.o graph.o llist.o BSTree.o
+
+readDataTest.o: readDataTest.c
+	$(CC) -c $(CFLAGS) readDataTest.c
 
 readData.o: readData.c readData.h
 	$(CC) -c $(CFLAGS) readData.c

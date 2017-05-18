@@ -95,6 +95,16 @@ void strlower(char *str) {
 	}
 }
 
+void normalise(char *str) {
+	strlower(str);
+	// remove trailing newlines - whitespace is handled by strtok()
+	// newlines can only happen once in a word thanks to getline()
+	char *pos = strchr(str, '\n');
+	if (pos != NULL) {
+		*pos = 0; // replace with null - new end of string
+	}
+}
+
 List GetWords(char *url) {
 	int len = strlen(url) + 5;
 	char *fname = malloc(sizeof(char) * len);
@@ -130,7 +140,7 @@ List GetWords(char *url) {
 		char *entry = strtok(buf, " ");
 		while (entry != NULL) {
 			if (entry[0] != '\n') {
-				strlower(entry);
+				normalise(entry);
 				if (!listHasElement(res, entry))
 					listPrepend(res, newNode(entry));
 			}
@@ -155,20 +165,12 @@ BSTree GetInvertedList(List urls) {
 			if (vals == NULL) {
 				vals = newList();
 				listPrepend(vals, newNode(nodeValue(n)));
-				BSTreeInsert(t, nodeValue(w), vals);
+				t = BSTreeInsert(t, nodeValue(w), vals);
 			} else {
-				listPrepend(vals, newNode(nodeValue(w)));
+				listPrepend(vals, newNode(nodeValue(n)));
 			}
 		}
 	}
-	return NULL; // TODO
+	return t;
 }
 
-/*int main(int argc, char *argv[]) {
-	List urls = GetCollection();
-	showList(urls);
-	Graph g = GetGraph(urls);
-	showGraph(g, 0);
-	destroyList(urls);
-	disposeGraph(g);
-}*/

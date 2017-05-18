@@ -93,6 +93,18 @@ int BSTreeNumNodes(BSTree t)
 	             + BSTreeNumNodes(t->right);
 }
 
+void BSTreeInfixDump(BSTree t, FILE *f) {
+	if (t == NULL) return;
+	BSTreeInfixDump(t->left, f);
+	fprintf(f, "%s", t->key);
+	Node n = NULL;
+	while ((n = next(t->value, n)) != NULL) {
+		fprintf(f, " %s", nodeValue(n));
+	}
+	fprintf(f, "\n");
+	BSTreeInfixDump(t->right, f);
+}
+
 // count #leaves in BSTree
 int BSTreeNumLeaves(BSTree t)
 {
@@ -111,13 +123,14 @@ BSTree BSTreeInsert(BSTree t, char *key, List val)
 	if (t == NULL)
 		return newBSTNode(key, val);
 	int res = strcmp(key, t->key);
-	if (res < 0)
+	if (res < 0) {
 		t->left = BSTreeInsert(t->left, key, val);
-	else if (res > 0)
+	} else if (res > 0) {
 		t->right = BSTreeInsert(t->right, key, val);
-	else //(res == 0)
+	} else { //(res == 0)
 		/* update list */
 		t->value = val;
+	}
 	return t;
 }
 
