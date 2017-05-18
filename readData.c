@@ -3,9 +3,9 @@
 #include <string.h>
 
 #include "graph.h"
-
+#include "readData.h"
 // Linked List ADT
-
+/*
 typedef struct Node {
 	char *val;
 	struct Node *next;
@@ -16,7 +16,7 @@ typedef struct ListHead {
 	int length;
 
 } *List;
-
+*/
 Node newNode(char *val) {
 	struct Node *n = malloc(sizeof(struct Node));
 	n->val = strdup(val);
@@ -150,7 +150,7 @@ Graph GetGraph(List urls) {
 	}
 	return g;
 }
-
+/*
 int main(int argc, char *argv[]) {
 	List urls = GetCollection();
 	showList(urls);
@@ -158,4 +158,4 @@ int main(int argc, char *argv[]) {
 	showGraph(g, 0);
 	destroyList(urls);
 	disposeGraph(g);
-}
+}*/

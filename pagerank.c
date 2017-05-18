@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "mergeSort.h"	
+#include "myMergeSort.h"	
 #include "readData.c"
 #include "graph.h"
 
@@ -108,8 +108,8 @@ void OutputToFile(Graph g, float *PR){
 		array[i] = new;
 	}
 
-	mergeSort((void*)array, 0, nVertices(g)-1, sizeof(URL), CompareOutgoing);		
-	mergeSort((void*)array, 0, nVertices(g)-1, sizeof(URL), ComparePageRank);
+	myMergeSort((void*)array, 0, nVertices(g)-1, sizeof(URL), CompareOutgoing);		
+	myMergeSort((void*)array, 0, nVertices(g)-1, sizeof(URL), ComparePageRank);
 
 	FILE*fp;
 	if((fp = fopen("pagerankList.txt","w")) != NULL) {
