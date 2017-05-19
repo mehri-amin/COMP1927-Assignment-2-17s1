@@ -103,6 +103,15 @@ void normalise(char *str) {
 	if (pos != NULL) {
 		*pos = 0; // replace with null - new end of string
 	}
+	// strcpy manpage says 'src and dest can't overlap', so
+	// temporarily copy data into this buffer
+	char *buf = malloc(sizeof(char) * strlen(str));
+	// look for full stops
+	while ((pos = strchr(str, '.')) != NULL) {
+		strcpy(buf, pos+1);
+		strcpy(pos, buf);
+	}
+	free(buf);
 }
 
 List GetWords(char *url) {

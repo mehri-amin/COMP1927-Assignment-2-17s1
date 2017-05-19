@@ -5,6 +5,7 @@
 #define BSTREE_H
 
 #include "llist.h"
+#include <stdio.h>
 
 typedef struct BSTNode *BSTree;
 
@@ -37,5 +38,7 @@ BSTree BSTreeInsertOne(BSTree, char*, char*);
 List BSTreeFind(BSTree, char*);
 // delete a value from a BSTree
 BSTree BSTreeDelete(BSTree, char*);
+
+void BSTreeInfixDump(BSTree, FILE *);
 
 #endif
