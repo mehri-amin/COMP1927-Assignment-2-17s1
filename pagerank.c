@@ -29,18 +29,16 @@ typedef struct URL{
 	char *name;
 } *URL;
 
-void calculatePageRank(Graph, float, float, int);
+void calculatePageRank(Graph,List,float, float, int);
 void OutputToFile(Graph, float *);
 
-static int ComparePageRank(void *a, void *b){
-	if(((URL)b)->pagerank - ((URL)a)->pagerank > EPSILON) return 0;
-	else return 1;
+static int ComparePageRank(const void *a,const void *b){
+	return (((URL)b)->pagerank - ((URL)a)->pagerank > EPSILON) ? 0 : 1;
 }
 
-static int CompareOutgoing(void *a, void *b){
+static int CompareOutgoing(const void *a,const void *b){
 
-	if((((URL)b)->nOutgoing - ((URL)a)->nOutgoing) > 0) return 0;
-	else return 1;
+	return ((((URL)b)->nOutgoing - ((URL)a)->nOutgoing) > 0) ? 0 : 1;
 }
 
 int main(int argc, char *argv[]){
@@ -61,40 +59,47 @@ int main(int argc, char *argv[]){
 	List urls = GetCollection();
 	showList(urls);
 	Graph g = GetGraph(urls);
-	showGraph(g,0);
+//	showGraph(g,0);
 
-	calculatePageRank(g,d,diffPR,maxIterations);
+	calculatePageRank(g,urls,d,diffPR,maxIterations);
 
-	destroyList(urls);
 	disposeGraph(g);
+	destroyList(urls);
 
 	return EXIT_SUCCESS;
 }
 
-void calculatePageRank(Graph g, float d, float diffPR, int maxIterations){
-	int i, j, N = nVertices(g);
+void calculatePageRank(Graph g,List urls, float d, float diffPR, int maxIterations){
+	int i =0, j=0; 
+	int N = nVertices(g);
 	float sum, diff, PR[N];
 
-	// for each url PR[i] in the collection
-	for(i=0; i<N; i++)
-		PR[i] = 1/N;
+	int prOld;
 
+	// for each url PR[i] in the collection
+	Node cur = NULL;
+	while((cur = next(urls,cur)) != NULL){
+		PR[i] = 1/(float) N;
+	}
 	int iteration = 0;
 	diff = diffPR; // to enter the following loop
 
 	while(iteration < maxIterations && diff >= diffPR) {
-
+	int i = 0;
 		iteration++;
 		for(i=0; i<N; i++){ //for each url
+			prOld = PR[i];
 			sum = 0; // initialize sum
-			for(j=0; j<N; j++){ //for each page pointing to PR[i]
-				if(isConnected(g,g->vertex[j],g->vertex[i])){ // check if there is a connection between page i and j
+			while((cur = next(urls,cur))!= NULL){
+//				if(isConnected(g,g->vertex[j],g->vertex[i])){ // check if there is a connection between page i and j
 					sum += PR[j] / outDegree(g,g->vertex[j]); // increment sum
-				}
-				PR[i] = (1-d)/N + d*sum; // add dampening factor
-				diff += fabs(PR[i] - PR[i-1]); // convergence is assumed
+				
+			j++;
 			}
-		}
+				PR[i] = (1-d)/N + d*sum; // add dampening factor
+				diff += fabs(PR[i] - prOld); // convergence is assumed
+			}
+		
 	}
 	OutputToFile(g, PR);
 }

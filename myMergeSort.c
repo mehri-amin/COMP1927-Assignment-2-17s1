@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include "myMergeSort.h"
 
-void myMergeSort(void *array[], int lo, int hi, int size, int(*first)(void*, void*))
+void myMergeSort(void *array[], int lo, int hi, int size, int(*first)(const void*,const void*))
 {
    int mid = (lo+hi)/2; // mid point
    if (hi <= lo) return;
@@ -13,7 +13,7 @@ void myMergeSort(void *array[], int lo, int hi, int size, int(*first)(void*, voi
    myMergeSort(array, mid+1, hi, size, first);
    myMerge(array, lo, mid, hi, size, first);
 }
-void myMerge(void *array[], int lo, int mid, int hi, int size, int(*first)(void*, void*))
+void myMerge(void *array[], int lo, int mid, int hi, int size, int(*first)(const void*,const void*))
 {
    int  i, j, k, nitems = hi-lo+1;
    void **tmp = malloc(nitems * size);
