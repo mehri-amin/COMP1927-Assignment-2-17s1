@@ -1,19 +1,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "llist.h"
+#include <string.h>
+#include <assert.h>
 
-typedef struct Node {
-	char *val;
-	struct Node *next;
-} *Node;
 
-typedef struct ListHead {
-	struct Node *head;
-	int length;
-
-} *List;
 
 Node newNode(char *val) {
+
 	struct Node *n = malloc(sizeof(struct Node));
 	n->val = strdup(val);
 	n->next = NULL;
@@ -76,3 +71,38 @@ int listHasElement(List l, char *val) {
 	return 0;
 }
 
+List listCopy(List l){
+	List copy = newList();
+	Node temp = newNode(l->first->val);
+	temp = l->first;
+
+	while(temp->next != NULL){
+	ListAfter(copy, temp->val);
+	temp = temp->next;
+	}
+	ListAfter(copy, temp->val);
+	return copy;
+}
+
+void ListAfter(List l, char *val)
+{
+	Node new = newNode(val);
+	if(l->first == NULL){
+	l->first = l->last = l->curr = new;
+	l->length++;
+	return;
+	}
+
+	assert(l!=NULL);
+	new->prev = l->curr;
+	if(l->curr->next != NULL){
+		new->next = l->curr->next;
+		l->curr->next->prev = new;
+	}else{
+		new->next = NULL;
+		l->last = new;
+	}
+	l->curr->next = new;
+	l->curr = new;
+	l->length++;
+}

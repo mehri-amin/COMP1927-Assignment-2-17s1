@@ -9,22 +9,20 @@
 #include "llist.h"
 
 List GetCollection() {
-	FILE *f = fopen("collection.txt", "r");
-	List l = newList();
-	char *buf = NULL;
-	size_t bufsize = 0;
-	while (getline(&buf, &bufsize, f) != -1) {
-		char *entry = strtok(buf, " ");
-		while (entry != NULL) {
-			if (entry[0] != '\n') {
-				listPrepend(l, newNode(entry));
-			}
-			entry = strtok(NULL, " ");
+	FILE *f = fopen("collection.txt","r");
+	List urls = newList();
+	urls = getList(f);
+	return urls;
+}
 
-		}
+List getList(FILE *in)
+{
+	List l;
+	char *buff = malloc(sizeof(char*)*(sizeof(in)));
+	l = newList();
+	while(fscanf(in, "%s\n", buff) != EOF){
+	ListAfter(l,buff);
 	}
-	fclose(f);
-	free(buf);
 	return l;
 }
 
@@ -74,18 +72,36 @@ List GetOutgoingUrls(char *url) {
 	return res;
 }
 
-Graph GetGraph(List urls) {
-	Node cur = NULL;
-	Graph g = newGraph(listLength(urls));
-	while ((cur = next(urls, cur)) != NULL) {
-		List outgoing = GetOutgoingUrls(nodeValue(cur));
-		Node edge = NULL;
-		while ((edge = next(outgoing, edge)) != NULL) {
-			addEdge(g, nodeValue(cur), nodeValue(edge));
+Graph GetGraph() {
+
+	List urls = GetCollection();
+	int nV = listLength(urls);
+
+	List m = listCopy(urls);
+	Graph g = newGraph(nV);
+
+	char buff[1000];
+	int i = 0;
+	FILE * f;
+	char * txt = ".txt";
+
+	while(i< nV){
+		strcat(urls->first->val, txt);
+		f = fopen(urls->first->val,"r");
+		
+	while((fscanf(f,"%s", buff) != EOF) && strcmp(buff, "#end") != 0){
+		if((strcmp(buff,"#start")!=0) && (strcmp(buff,"Section-1")!=0)){
+			// Get url texts from text file and treat as vertices
+			addEdge(g, m->first->val, buff);
 		}
-		destroyList(outgoing);
 	}
-	return g;
+	
+	urls->first = urls->first->next;
+	m->first = m->first->next;
+	i++;
+	fclose(f);
+	}
+	return g; 
 }
 
 void strlower(char *str) {

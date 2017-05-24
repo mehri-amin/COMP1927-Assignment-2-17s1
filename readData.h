@@ -8,7 +8,9 @@ List GetCollection();
 
 List GetOutgoingUrls(char *);
 
-Graph GetGraph(List);
+List getList(FILE *);
+
+Graph GetGraph();
 
 BSTree GetInvertedList(List);
 

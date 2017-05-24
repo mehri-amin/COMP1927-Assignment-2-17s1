@@ -1,8 +1,21 @@
 #ifndef LLIST_H
 #define LLIST_H
 
+#include <stdio.h> 
 typedef struct Node *Node;
 typedef struct ListHead *List;
+
+typedef struct Node {
+        char *val;
+        struct Node *next, *prev;
+} *Node;
+
+typedef struct ListHead {
+        struct Node *head;
+        int length;
+        struct Node *first, *last, *curr;
+
+} *List;
 
 Node newNode(char *val);
 char *nodeValue(Node n);
@@ -22,6 +35,11 @@ int listLength(List l);
 void showList(List l);
 // does the list have element val?
 int listHasElement(List l, char *val);
+
+void ListAfter(List, char *);
+
+List listCopy(List l);
+
 #endif
 
 
