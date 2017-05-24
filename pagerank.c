@@ -1,17 +1,3 @@
-/* pagerank.c
-
-	- Get args : d, diffPR, maxIterations
-
-	- GetCollection
-	- GetGraph
-
-	- List_Urls_PageRanks = calculatePageRank(g,d,diffPR,maxIterations)
-	- Ordered_List_Urls_PageRanks = order(List_Urls_PageRanks)
-
-	- Output Ordered_List_Urls_PageRanks to "pagerankList.txt"
-
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -59,7 +45,7 @@ int main(int argc, char *argv[]){
 	List l = GetCollection();
 	showList(l);
 	Graph g = GetGraph(l);
-//	showGraph(g,0);
+	showGraph(g,0);
 
 	calculatePageRank(g,l,d,diffPR,maxIterations);
 
@@ -73,33 +59,25 @@ void calculatePageRank(Graph g,List l, float d, float diffPR, int maxIterations)
 	int N = nVertices(g);
 	float sum, diff, PR[N];
 
-	int prOld;
 	int i=0,j=0;
 	// for each url PR[i] in the collection
-	Node cur = NULL;
-	while((cur = next(l,cur)) != NULL){
-		PR[i] = 1/(float) N;
-		i++;
-	}
+	for(i=0;i<N;i++)	
+	PR[i] = 1/(float) N;
+
 	int iteration = 0;
 	diff = diffPR; // to enter the following loop
 
 	while(iteration < maxIterations && diff >= diffPR) {
 		iteration++;
-		Node u = NULL;
-		while((u = next(l,u))){ //for each url
-			prOld = PR[i];
+		for(i=0;i<N;i++){		
 			sum = 0; // initialize sum
-			while((cur = next(l,cur))!= NULL){
-				if(isConnected(g,nodeValue(cur),nodeValue(u))){ // check if there is a connection between page i and j
-					sum += PR[j] / outDegree(g,nodeValue(cur)); // increment sum
-			}	
-			j++;
+			for(j=0;j<N;j++){	
+			if(isConnected(g,g->vertex[j],g->vertex[i])) // check if there is a connection between page i and j
+					sum += PR[j] / outDegree(g,g->vertex[j]); // increment sum
 			}
 				PR[i] = (1-d)/N + d*sum; // add dampening factor
-				diff += fabs(PR[i] - prOld); // convergence is assumed
-			i++;}
-	
+				diff += fabs(PR[i] - PR[i-1]); // convergence is assumed
+			}	
 	}
 	OutputToFile(g,l, PR);
 }
@@ -108,14 +86,12 @@ void OutputToFile(Graph g, List l,float *PR){
 	int i=0; 
 	int N=nVertices(g);
 	URL array[N]; // array of pageranks
-	Node cur = NULL;
-	while((cur = next(l,cur))!=NULL){
+	for(i=0;i<N;i++){
 		URL new = malloc(sizeof(URL));
 		new->pagerank = PR[i];
-		new->nOutgoing = outDegree(g,nodeValue(cur));
-		new->name = strdup(nodeValue(cur));
+		new->nOutgoing = outDegree(g,g->vertex[i]);
+		new->name = strdup(g->vertex[i]);
 		array[i] = new;
-	i++;
 	}
 	myMergeSort((void*)array, 0, nVertices(g)-1, sizeof(URL), CompareOutgoing);
 	myMergeSort((void*)array, 0, nVertices(g)-1, sizeof(URL), ComparePageRank);
