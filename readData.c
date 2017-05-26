@@ -10,8 +10,7 @@
 
 List GetCollection() {
 	FILE *f = fopen("collection.txt","r");
-	List urls = newList();
-	urls = getList(f);
+	List urls = getList(f);
 	return urls;
 }
 
@@ -72,36 +71,37 @@ List GetOutgoingUrls(char *url) {
 	return res;
 }
 
-Graph GetGraph() {
+Graph GetGraph(void) {
 
 	List urls = GetCollection();
 	int nV = listLength(urls);
 
-	List m = listCopy(urls);
 	Graph g = newGraph(nV);
 
 	char buff[1000];
 	int i = 0;
-	FILE * f;
-	char * txt = ".txt";
+	FILE *f;
+	char *txt = ".txt";
 
+	Node curr = NULL;
 	while(i< nV){
-		strcat(urls->first->val, txt);
-		f = fopen(urls->first->val,"r");
-		
-	while((fscanf(f,"%s", buff) != EOF) && strcmp(buff, "#end") != 0){
-		if((strcmp(buff,"#start")!=0) && (strcmp(buff,"Section-1")!=0)){
-			// Get url texts from text file and treat as vertices
-			addEdge(g, m->first->val, buff);
+		curr = next(urls, curr);
+		char *file = malloc((strlen(nodeValue(curr)) + 5) * sizeof(char));
+		strcpy(file, nodeValue(curr));
+		strcat(file, txt);
+		f = fopen(file, "r");
+		free(file);
+		while ((fscanf(f,"%s", buff) != EOF) && strcmp(buff, "#end") != 0) {
+			if ((strcmp(buff,"#start")!=0) && (strcmp(buff,"Section-1")!=0)) {
+				// Get url texts from text file and treat as vertices
+				addEdge(g, nodeValue(curr), buff);
+			}
 		}
+
+		i++;
+		fclose(f);
 	}
-	
-	urls->first = urls->first->next;
-	m->first = m->first->next;
-	i++;
-	fclose(f);
-	}
-	return g; 
+	return g;
 }
 
 void strlower(char *str) {
@@ -182,14 +182,17 @@ BSTree GetInvertedList(List urls) {
 	BSTree t = newBSTree();
 	Node n = NULL;
 	while ((n = next(urls, n)) != NULL) {
+		printf("Next URL: %s\n", nodeValue(n));
 		// get words
 		List words = GetWords(nodeValue(n));
 		Node w = NULL;
 		while ((w = next(words, w)) != NULL) {
+			// Tree - each node contains "key" (word) and "value" (list of arrays)
 			List vals = BSTreeFind(t, nodeValue(w));
 			if (vals == NULL) {
 				vals = newList();
 				listPrepend(vals, newNode(nodeValue(n)));
+				printf("insert %s\n", nodeValue(w));
 				t = BSTreeInsert(t, nodeValue(w), vals);
 			} else {
 				listPrepend(vals, newNode(nodeValue(n)));

@@ -10,7 +10,7 @@ List GetOutgoingUrls(char *);
 
 List getList(FILE *);
 
-Graph GetGraph();
+Graph GetGraph(void);
 
 BSTree GetInvertedList(List);
 
