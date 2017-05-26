@@ -11,7 +11,6 @@ typedef struct Node {
 } *Node;
 
 typedef struct ListHead {
-        struct Node *head;
         int length;
         struct Node *first, *last, *curr;
 

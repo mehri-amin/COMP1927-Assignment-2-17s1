@@ -21,12 +21,12 @@ char *nodeValue(Node n) {
 
 List newList() {
 	List l = calloc(1, sizeof(struct ListHead));
-	l->head = NULL;
+	l->first = NULL;
 	return l;
 }
 
 void destroyList(List l) {
-	Node cur = l->head;
+	Node cur = l->first;
 	while (cur != NULL) {
 		Node tmp = cur;
 		free(cur->val);
@@ -38,13 +38,20 @@ void destroyList(List l) {
 
 Node next(List l, Node n) {
 	if (n == NULL)
-		return l->head;
+		return l->first;
 	return n->next;
 }
 
 void listPrepend(List l, Node n) {
-	n->next = l->head;
-	l->head = n;
+	if (l->first == NULL) {
+		l->first = l->last = l->curr = n;
+		l->length++;
+		return;
+	}
+	n->prev = NULL;
+	n->next = l->first;
+	l->first->prev = n;
+	l->first = n;
 	l->length++;
 }
 
@@ -87,10 +94,10 @@ List listCopy(List l){
 void ListAfter(List l, char *val)
 {
 	Node new = newNode(val);
-	if(l->first == NULL){
-	l->first = l->last = l->curr = new;
-	l->length++;
-	return;
+	if (l->first == NULL) {
+		l->first = l->last = l->curr = new;
+		l->length++;
+		return;
 	}
 
 	assert(l!=NULL);

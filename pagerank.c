@@ -44,7 +44,7 @@ int main(int argc, char *argv[]){
 	// GetCollection & GetGraph
 	List l = GetCollection();
 	showList(l);
-	Graph g = GetGraph(l);
+	Graph g = GetGraph();
 	showGraph(g,0);
 
 	calculatePageRank(g,l,d,diffPR,maxIterations);
