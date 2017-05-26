@@ -1,20 +1,10 @@
 #ifndef LLIST_H
 #define LLIST_H
 
-#include <stdio.h> 
+#include <stdio.h>
 typedef struct Node *Node;
 typedef struct ListHead *List;
 
-typedef struct Node {
-        char *val;
-        struct Node *next, *prev;
-} *Node;
-
-typedef struct ListHead {
-        int length;
-        struct Node *first, *last, *curr;
-
-} *List;
 
 Node newNode(char *val);
 char *nodeValue(Node n);

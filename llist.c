@@ -5,6 +5,17 @@
 #include <string.h>
 #include <assert.h>
 
+typedef struct Node {
+        char *val;
+        struct Node *next, *prev;
+} *Node;
+
+typedef struct ListHead {
+        int length;
+        struct Node *first, *last, *curr;
+
+} *List;
+
 
 
 Node newNode(char *val) {
