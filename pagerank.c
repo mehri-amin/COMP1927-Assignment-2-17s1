@@ -10,13 +10,13 @@
 #define EPSILON 1E-6
 
 typedef struct URL{
-	float pagerank;
+	double pagerank;
 	int nOutgoing;
 	char *name;
 } *URL;
 
-void calculatePageRank(Graph,List,float, float, int);
-void OutputToFile(Graph,List, float *);
+void calculatePageRank(Graph,List,double, double, int);
+void OutputToFile(Graph,List, double *);
 
 static int ComparePageRank(const void *a,const void *b){
 	return (((URL)b)->pagerank - ((URL)a)->pagerank > EPSILON) ? 0 : 1;
@@ -35,7 +35,7 @@ int main(int argc, char *argv[]){
 		exit(0);
 	}
 
-	float d, diffPR;
+	double d, diffPR;
 	int maxIterations;
 	d = atof(argv[1]);
 	diffPR = atof(argv[2]);
@@ -55,35 +55,39 @@ int main(int argc, char *argv[]){
 	return EXIT_SUCCESS;
 }
 
-void calculatePageRank(Graph g,List l, float d, float diffPR, int maxIterations){
+void calculatePageRank(Graph g,List l, double d, double diffPR, int maxIterations){
 	int N = nVertices(g);
-	float sum, diff, PR[N];
+	double sum, diff, PR[N], oldPR[N];
 
 	int i=0,j=0;
 	// for each url PR[i] in the collection
-	for(i=0;i<N;i++)	
-	PR[i] = 1/(float) N;
+	for(i=0;i<N;i++)
+		PR[i] = oldPR[i] = 1.0f/(double) N;
 
 	int iteration = 0;
 	diff = diffPR; // to enter the following loop
 
-	while(iteration < maxIterations && diff >= diffPR) {
+	while (iteration < maxIterations && diff >= diffPR) {
 		iteration++;
-		for(i=0;i<N;i++){		
+		memcpy(oldPR, PR, sizeof(double) * N);
+		diff = 0;
+		for (i=0;i<N;i++){
 			sum = 0; // initialize sum
-			for(j=0;j<N;j++){	
-			if(isConnected(g,g->vertex[j],g->vertex[i])) // check if there is a connection between page i and j
-					sum += PR[j] / outDegree(g,g->vertex[j]); // increment sum
+			for(j=0;j<N;j++){
+				if (i == j) continue;
+				if (isConnected(g,g->vertex[j],g->vertex[i])) { // check if there is a connection between page i and j
+					sum += oldPR[j] / (double)outDegree(g,g->vertex[j]); // increment sum
+				}
 			}
-				PR[i] = (1-d)/N + d*sum; // add dampening factor
-				diff += fabs(PR[i] - PR[i-1]); // convergence is assumed
-			}	
+			PR[i] = (1.0f-d)/(double)N + d*sum; // add dampening factor
+			diff += fabs(PR[i] - oldPR[i]); // convergence is assumed
+		}
 	}
 	OutputToFile(g,l, PR);
 }
 
-void OutputToFile(Graph g, List l,float *PR){
-	int i=0; 
+void OutputToFile(Graph g, List l, double *PR){
+	int i=0;
 	int N=nVertices(g);
 	URL array[N]; // array of pageranks
 	for(i=0;i<N;i++){
@@ -99,8 +103,8 @@ void OutputToFile(Graph g, List l,float *PR){
 	FILE*fp;
 	if((fp = fopen("pagerankList.txt","w")) != NULL) {
 		for(i=0;i<N;i++){
-			printf("%s, %d, %.8f\n", array[i]->name, array[i]->nOutgoing, array[i]->pagerank);
-			fprintf(fp, "%s, %d, %.8f\n", array[i]->name, array[i]->nOutgoing, array[i]->pagerank);
+			printf("%s, %d, %.7f\n", array[i]->name, array[i]->nOutgoing, array[i]->pagerank);
+			fprintf(fp, "%s, %d, %.7f\n", array[i]->name, array[i]->nOutgoing, array[i]->pagerank);
 			free(array[i]->name);
 			free(array[i]);
 		}
