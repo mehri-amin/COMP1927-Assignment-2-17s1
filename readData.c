@@ -182,7 +182,6 @@ BSTree GetInvertedList(List urls) {
 	BSTree t = newBSTree();
 	Node n = NULL;
 	while ((n = next(urls, n)) != NULL) {
-		printf("Next URL: %s\n", nodeValue(n));
 		// get words
 		List words = GetWords(nodeValue(n));
 		Node w = NULL;
@@ -192,7 +191,6 @@ BSTree GetInvertedList(List urls) {
 			if (vals == NULL) {
 				vals = newList();
 				listPrepend(vals, newNode(nodeValue(n)));
-				printf("insert %s\n", nodeValue(w));
 				t = BSTreeInsert(t, nodeValue(w), vals);
 			} else {
 				listPrepend(vals, newNode(nodeValue(n)));
