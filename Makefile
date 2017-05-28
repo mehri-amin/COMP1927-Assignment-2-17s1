@@ -1,16 +1,16 @@
 CC = gcc
 CFLAGS = -Wall -Werror -g
 
-all: pagerank readData
+all: pagerank inverted
 
 pagerank: pagerank.o graph.o myMergeSort.o readData.o llist.o BSTree.o
 	$(CC) $(CFLAGS) -o pagerank pagerank.o graph.o myMergeSort.o readData.o llist.o BSTree.o
 
-readData: readDataTest.o readData.o graph.o llist.o BSTree.o
-	$(CC) -o readData readDataTest.o readData.o graph.o llist.o BSTree.o
+inverted: inverted.o readData.o graph.o llist.o BSTree.o
+	$(CC) -o inverted inverted.o readData.o graph.o llist.o BSTree.o
 
-readDataTest.o: readDataTest.c
-	$(CC) -c $(CFLAGS) readDataTest.c
+inverted.o: inverted.c
+	$(CC) -c $(CFLAGS) inverted.c
 
 readData.o: readData.c readData.h
 	$(CC) -c $(CFLAGS) readData.c
@@ -31,4 +31,4 @@ myMergeSort.o: myMergeSort.c myMergeSort.h
 	$(CC) -c $(CFLAGS) myMergeSort.c
 
 clean :
-	rm -f pagerank *.o core
+	rm -f pagerank *.o core inverted
