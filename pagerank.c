@@ -91,7 +91,7 @@ void OutputToFile(Graph g, List l, double *PR){
 	int N=nVertices(g);
 	URL array[N]; // array of pageranks
 	for(i=0;i<N;i++){
-		URL new = malloc(sizeof(URL));
+		URL new = malloc(sizeof(struct URL));
 		new->pagerank = PR[i];
 		new->nOutgoing = outDegree(g,g->vertex[i]);
 		new->name = strdup(g->vertex[i]);
