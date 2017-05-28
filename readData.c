@@ -11,16 +11,18 @@
 List GetCollection() {
 	FILE *f = fopen("collection.txt","r");
 	List urls = getList(f);
+	fclose(f);
 	return urls;
 }
 
 List getList(FILE *in)
 {
 	List l;
-	char *buff = malloc(sizeof(char*)*(sizeof(in)));
+	char *buff;
 	l = newList();
-	while(fscanf(in, "%s\n", buff) != EOF){
-	ListAfter(l,buff);
+	while (fscanf(in, "%ms\n", &buff) != EOF) { // let fscanf allocate a buffer
+		ListAfter(l, buff);
+		free(buff);
 	}
 	return l;
 }
@@ -101,6 +103,7 @@ Graph GetGraph(void) {
 		i++;
 		fclose(f);
 	}
+	destroyList(urls);
 	return g;
 }
 
@@ -196,6 +199,7 @@ BSTree GetInvertedList(List urls) {
 				listPrepend(vals, newNode(nodeValue(n)));
 			}
 		}
+		destroyList(words);
 	}
 	return t;
 }

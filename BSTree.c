@@ -39,6 +39,8 @@ void dropBSTree(BSTree t)
 	if (t == NULL) return;
 	dropBSTree(t->left);
 	dropBSTree(t->right);
+	free(t->key);
+	destroyList(t->value);
 	free(t);
 }
 
