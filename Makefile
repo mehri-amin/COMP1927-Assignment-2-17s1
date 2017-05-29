@@ -1,10 +1,16 @@
 CC = gcc
-CFLAGS = -Wall -Werror -g
+CFLAGS = -Wall -Werror -g -lm
 
-all: pagerank inverted
+all: pagerank inverted searchTfIdf
 
 pagerank: pagerank.o graph.o myMergeSort.o readData.o llist.o BSTree.o
 	$(CC) $(CFLAGS) -o pagerank pagerank.o graph.o myMergeSort.o readData.o llist.o BSTree.o
+
+searchTfIdf: searchTfIdf.o graph.o BSTree.o readData.o llist.o
+	$(CC) $(CFLAGS) -o searchTfIdf searchTfIdf.o graph.o BSTree.o readData.o llist.o
+
+searchTfIdf.o: searchTfIdf.c
+	$(CC) -c $(CFLAGS) searchTfIdf.c
 
 inverted: inverted.o readData.o graph.o llist.o BSTree.o
 	$(CC) -o inverted inverted.o readData.o graph.o llist.o BSTree.o

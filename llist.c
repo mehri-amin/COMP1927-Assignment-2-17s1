@@ -89,6 +89,18 @@ int listHasElement(List l, char *val) {
 	return 0;
 }
 
+int listIndex(List l, char *val) {
+	Node n = NULL;
+	int i = 0;
+	while ((n = next(l, n)) != NULL) {
+		if (strcmp(val, n->val) == 0) {
+			return i;
+		}
+		i++;
+	}
+	return -1;
+}
+
 List listCopy(List l){
 	List copy = newList();
 	Node temp = newNode(l->first->val);

@@ -24,6 +24,8 @@ int listLength(List l);
 void showList(List l);
 // does the list have element val?
 int listHasElement(List l, char *val);
+// returns the index of val in the list, -1 if not found
+int listIndex(List l, char *val);
 
 void ListAfter(List, char *);
 

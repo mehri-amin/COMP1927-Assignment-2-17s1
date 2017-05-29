@@ -10,6 +10,8 @@ List GetOutgoingUrls(char *);
 
 List getList(FILE *);
 
+void normalise(char *);
+
 Graph GetGraph(void);
 
 BSTree GetInvertedList(List);
