@@ -6,8 +6,8 @@ all: pagerank inverted searchTfIdf
 pagerank: pagerank.o graph.o myMergeSort.o readData.o llist.o BSTree.o
 	$(CC) $(CFLAGS) -o pagerank pagerank.o graph.o myMergeSort.o readData.o llist.o BSTree.o
 
-searchTfIdf: searchTfIdf.o graph.o BSTree.o readData.o llist.o
-	$(CC) $(CFLAGS) -o searchTfIdf searchTfIdf.o graph.o BSTree.o readData.o llist.o
+searchTfIdf: searchTfIdf.o graph.o BSTree.o readData.o llist.o myMergeSort.o
+	$(CC) $(CFLAGS) -o searchTfIdf searchTfIdf.o graph.o BSTree.o readData.o llist.o myMergeSort.o
 
 searchTfIdf.o: searchTfIdf.c
 	$(CC) -c $(CFLAGS) searchTfIdf.c
