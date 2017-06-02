@@ -39,7 +39,7 @@ double bestScore;
 List bestList;
 
 // recursively permute through all combinations
-void permute(Set urls, List rankA, List rankD, Set excluded, List selected) {
+void permute(Set urls, List ranks[], int nRanks, Set excluded, List selected) {
 	if (excluded == NULL) {
 		bestScore = -1.0;
 		excluded = newStringSet();
@@ -54,21 +54,17 @@ void permute(Set urls, List rankA, List rankD, Set excluded, List selected) {
 		Node curr = NULL;
 		double sum = 0;
 		int pos = 1;
+		int i = 0;
 		int len = listLength(selected);
 		while ((curr = next(selected, curr)) != NULL) {
-			// W(C, P) for T1
-			int idx = listIndex(rankA, nodeValue(curr));
-			if (idx != -1) {
-				idx++;
-//				printf("%d/%d - %d/%d\n", idx, listLength(rankA), pos, len);
-				sum += fabs((double)idx / listLength(rankA) - (double)pos / len);
-			}
-			// W(C, P) for T2
-			idx = listIndex(rankD, nodeValue(curr));
-			if (idx != -1) {
-				idx++;
-//				printf("%d/%d - %d/%d\n", idx, listLength(rankD), pos, len);
-				sum += fabs((double)idx / listLength(rankD) - (double)pos / len);
+			// W(C, P) for each list
+			for (i = 0; i < nRanks; i++) {
+				int idx = listIndex(ranks[i], nodeValue(curr));
+				if (idx != -1) {
+					idx++;
+					//				printf("%d/%d - %d/%d\n", idx, listLength(rankA), pos, len);
+					sum += fabs((double)idx / listLength(ranks[i]) - (double)pos / len);
+				}
 			}
 			pos++;
 		}
@@ -88,7 +84,7 @@ void permute(Set urls, List rankA, List rankD, Set excluded, List selected) {
 		if (SetMember(excluded, val)) continue;
 		SetInsert(excluded, val);
 	 	ListAppend(selected, val);	
-		permute(urls, rankA, rankD, excluded, selected);
+		permute(urls, ranks, nRanks, excluded, selected);
 		listDelete(selected);
 		SetDelete(excluded, val);
 	}
@@ -99,27 +95,21 @@ int main(int argc, char *argv[]) {
 		fprintf(stderr, "Usage: %s rankA rankD\n", argv[0]);
 		return 0;
 	}
-	List rankA;
-	List rankD;
+	List ranks[argc - 1];
 	int i;
 	for (i=1; i<argc; i++) {
 		FILE *f = fopen(argv[i], "r");
-		if (i == 1) {
-			rankA = getList(f);
-		} else {
-			rankD = getList(f);
-		}
+		ranks[i-1] = getList(f);
 		fclose(f);
 	}
 	Set urls = newStringSet();
 	Node curr = NULL;
-	while ((curr = next(rankA, curr)) != NULL) {
-		SetInsert(urls, nodeValue(curr));
+	for (i = 0; i < argc - 1; i++) {
+		while ((curr = next(ranks[i], curr)) != NULL) {
+			SetInsert(urls, nodeValue(curr));
+		}
 	}
-	while ((curr = next(rankD, curr)) != NULL) {
-		SetInsert(urls, nodeValue(curr));
-	}
-	permute(urls, rankA, rankD, NULL, NULL);
+	permute(urls, ranks, argc - 1, NULL, NULL);
 	printf("%f\n", bestScore);
 	curr = NULL;
 	while ((curr = next(bestList, curr)) != NULL) {
