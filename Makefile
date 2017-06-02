@@ -1,10 +1,16 @@
 CC = gcc
-CFLAGS = -Wall -Werror -g -lm
+CFLAGS = -Wall -Werror -g -lm #-std=gnu89
 
-all: pagerank inverted searchTfIdf
+all: pagerank inverted searchTfIdf searchPagerank
 
 pagerank: pagerank.o graph.o myMergeSort.o readData.o llist.o BSTree.o
 	$(CC) $(CFLAGS) -o pagerank pagerank.o graph.o myMergeSort.o readData.o llist.o BSTree.o
+
+searchPagerank: searchPagerank.o
+	$(CC) $(CFLAGS) -o searchPagerank searchPagerank.o
+
+searchPagerank.o: searchPagerank.c searchPagerank.h
+	$(CC) -c $(CFLAGS) searchPagerank.c
 
 searchTfIdf: searchTfIdf.o graph.o BSTree.o readData.o llist.o myMergeSort.o
 	$(CC) $(CFLAGS) -o searchTfIdf searchTfIdf.o graph.o BSTree.o readData.o llist.o myMergeSort.o
