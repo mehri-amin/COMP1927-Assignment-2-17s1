@@ -107,7 +107,8 @@ int outDegree(Graph g, char *vertex)
 		return -1;
 	}
 	int degree = 0;
-	for (int i = 0; i < g->nV; i++) {
+	int i;
+	for (i = 0; i < g->nV; i++) {
 		if (i == v) continue; // don't count self-loops
 		if (g->edges[v][i] != 0) {
 			degree++;

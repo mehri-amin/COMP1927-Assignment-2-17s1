@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -109,7 +110,8 @@ Graph GetGraph(void) {
 
 void strlower(char *str) {
 	int len = strlen(str);
-	for (int i = 0; i < len; i++) {
+	int i;
+	for (i = 0; i < len; i++) {
 		str[i] = tolower(str[i]);
 	}
 }

@@ -71,8 +71,8 @@ int main(int argc, char **argv) {
 	BSTree index = GetInvertedList(urls);
 	int N = listLength(urls); // total number of documents
 	struct tfidf **freqs = calloc(N, sizeof(struct tfidf*));
-
-	for (int i = 1; i < argc; i++) { // argv[0] is the program name - skip it
+	int i;
+	for (i = 1; i < argc; i++) { // argv[0] is the program name - skip it
 		List containing = BSTreeFind(index, argv[i]);
 		Node cur = NULL;
 		if (containing == NULL) {
@@ -93,11 +93,12 @@ int main(int argc, char **argv) {
 	}
 
 	myMergeSort((void*)freqs, 0, N-1, N, compareTfIdf);
-	for (int i = 0; i < N; i++) {
+	for (i = 0; i < N; i++) {
 		if (freqs[i] == NULL)
 			continue;
 		if (freqs[i]->tfidf > 0) {
 			printf("%s %0.6f\n", freqs[i]->url, freqs[i]->tfidf);
 		}
 	}
+	return 0;
 }

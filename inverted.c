@@ -18,4 +18,5 @@ int main(int argc, char *argv[]) {
 	destroyList(urls);
 	disposeGraph(g);
 	dropBSTree(t);
+	return 0;
 }
