@@ -11,7 +11,6 @@ int main(int argc, char *argv[]) {
 	Graph g = GetGraph();
 	showGraph(g, 0);
 	BSTree t = GetInvertedList(urls);
-	showBSTree(t);
 	FILE *idx = fopen("invertedIndex.txt", "w");
 	BSTreeInfixDump(t, idx);
 	fclose(idx);
