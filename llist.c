@@ -23,6 +23,7 @@ Node newNode(char *val) {
 	struct Node *n = malloc(sizeof(struct Node));
 	n->val = strdup(val);
 	n->next = NULL;
+	n->prev = NULL;
 	return n;
 }
 
@@ -32,7 +33,7 @@ char *nodeValue(Node n) {
 
 List newList() {
 	List l = calloc(1, sizeof(struct ListHead));
-	l->first = NULL;
+	l->first = l->last = l->curr = NULL;
 	return l;
 }
 
@@ -64,6 +65,18 @@ void listPrepend(List l, Node n) {
 	l->first->prev = n;
 	l->first = n;
 	l->length++;
+}
+
+void listDelete(List l) {
+	Node toDrop = l->last;
+	l->last = l->last->prev;
+	if (l->last == NULL) {
+		l->curr = NULL;
+		l->first = NULL;
+	}
+	l->length--;
+	free(toDrop->val);
+	free(toDrop);
 }
 
 int listLength(List l) {
@@ -103,15 +116,27 @@ int listIndex(List l, char *val) {
 
 List listCopy(List l){
 	List copy = newList();
-	Node temp = newNode(l->first->val);
+	Node temp;
 	temp = l->first;
 
-	while(temp->next != NULL){
-	ListAfter(copy, temp->val);
-	temp = temp->next;
+	while (temp != NULL){
+		ListAppend(copy, temp->val);
+		temp = temp->next;
 	}
-	ListAfter(copy, temp->val);
 	return copy;
+}
+
+void ListAppend(List l, char *val) {
+	Node new = newNode(val);
+	if (l->first == NULL) {
+		l->first = l->last = l->curr = new;
+		l->length++;
+		return;
+	}
+	new->prev = l->last;
+	l->last->next = new;
+	l->last = new;
+	l->length++;
 }
 
 void ListAfter(List l, char *val)

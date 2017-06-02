@@ -20,13 +20,16 @@ Node next(List l, Node n);
 void listPrepend(List l, Node n);
 // return the length of the list
 int listLength(List l);
+// delete last element in the list
+void listDelete(List l);
 // print the list
 void showList(List l);
 // does the list have element val?
 int listHasElement(List l, char *val);
 // returns the index of val in the list, -1 if not found
 int listIndex(List l, char *val);
-
+// append to the end of the list
+void ListAppend(List l, char *val);
 void ListAfter(List, char *);
 
 List listCopy(List l);

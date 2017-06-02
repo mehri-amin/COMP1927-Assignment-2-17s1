@@ -25,23 +25,9 @@ Some stuff I found that could help in making a smart Algorithm:
 #include <assert.h>
 #include <string.h>
 #include <math.h>
-
-int RankArray(char*, char***);
-void permute(
-int Position(char**,char*,int);
-double calcScaledFR(
-
-
-int main(int argc, char *argv[])
-{
-	if(argc < 2){
-	fprintf(stderr, "Usage: rankA rankD...\n");
-	exit(0);
-	}
-
-	Set S = malloc(sizeof(Set) * (argc - 1));
-	for(i=1; i<argc; i++) S[] = getCollection(argv[i]);
-}
+#include "stringSet.h"
+#include "SetG.h"
+#include "readData.h"
 
 // Create a table of rank files that includes content of files
 // Create a Set S that is the union of the table (use set.c?)
@@ -49,21 +35,102 @@ int main(int argc, char *argv[])
 // Find number of elements in each rank - |t|
 // Find number of elements in Set  |S|
 // Find best P{} - permute function
+double bestScore;
+List bestList;
 
-void permute(char *a, int i, int n, position, Set S)
-	if(i==n) 
-	printf
-	else for(j = i; j<=n; j++)
-	swap, permute, swap
+// recursively permute through all combinations
+void permute(Set urls, List rankA, List rankD, Set excluded, List selected) {
+	if (excluded == NULL) {
+		bestScore = -1.0;
+		excluded = newStringSet();
+	}
+	if (selected == NULL) {
+		selected = newList();
+	}
+	
+	if (SetSize(urls) == SetSize(excluded)) {
+//		printf("=======\n");
+		// no more options, calculate.
+		Node curr = NULL;
+		double sum = 0;
+		int pos = 1;
+		int len = listLength(selected);
+		while ((curr = next(selected, curr)) != NULL) {
+			// W(C, P) for T1
+			int idx = listIndex(rankA, nodeValue(curr));
+			if (idx != -1) {
+				idx++;
+//				printf("%d/%d - %d/%d\n", idx, listLength(rankA), pos, len);
+				sum += fabs((double)idx / listLength(rankA) - (double)pos / len);
+			}
+			// W(C, P) for T2
+			idx = listIndex(rankD, nodeValue(curr));
+			if (idx != -1) {
+				idx++;
+//				printf("%d/%d - %d/%d\n", idx, listLength(rankD), pos, len);
+				sum += fabs((double)idx / listLength(rankD) - (double)pos / len);
+			}
+			pos++;
+		}
+		if (sum < bestScore || bestScore < 0) {
+			if (bestScore >= 0) {
+				// destroy list
+				destroyList(bestList);
+			}
+			bestScore = sum;
+			bestList = listCopy(selected);
+		}
+	}
+	void *ptr = NULL;
+	char *val = NULL;
+	
+	while ((val = (char*)SetNext(urls, &ptr)) != NULL) {
+		if (SetMember(excluded, val)) continue;
+		SetInsert(excluded, val);
+	 	ListAppend(selected, val);	
+		permute(urls, rankA, rankD, excluded, selected);
+		listDelete(selected);
+		SetDelete(excluded, val);
+	}
 
-static double calcScaledFR(int P[], int |t|, int |S|, char ***Table, char **elements){
-	double result = 0;
-	int i,j;
-	for(i=0; i<|S|;i++){
-		for(j=0;j<int|t|;j++){
-			int T(c) = findposition();
-			result += | (T(c)/|t| - P[]/|S|) |;
-
-	return result;
+}
+int main(int argc, char *argv[]) {
+	if (argc < 2) {
+		fprintf(stderr, "Usage: %s rankA rankD\n", argv[0]);
+		return 0;
+	}
+	List rankA;
+	List rankD;
+	int i;
+	for (i=1; i<argc; i++) {
+		FILE *f = fopen(argv[i], "r");
+		if (i == 1) {
+			rankA = getList(f);
+		} else {
+			rankD = getList(f);
+		}
+		fclose(f);
+	}
+	Set urls = newStringSet();
+	Node curr = NULL;
+	while ((curr = next(rankA, curr)) != NULL) {
+		SetInsert(urls, nodeValue(curr));
+	}
+	while ((curr = next(rankD, curr)) != NULL) {
+		SetInsert(urls, nodeValue(curr));
+	}
+	permute(urls, rankA, rankD, NULL, NULL);
+	printf("%f\n", bestScore);
+	curr = NULL;
+	while ((curr = next(bestList, curr)) != NULL) {
+		printf("%s\n", nodeValue(curr));
+	}
+	return 0;
 }
 
+
+/*
+static double calcScaledFR(int P[], int |t|, int |S|, char ***Table, char **elements){
+	return result;
+}
+*/

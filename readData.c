@@ -22,7 +22,7 @@ List getList(FILE *in)
 	char *buff;
 	l = newList();
 	while (fscanf(in, "%ms\n", &buff) != EOF) { // let fscanf allocate a buffer
-		ListAfter(l, buff);
+		ListAppend(l, buff);
 		free(buff);
 	}
 	return l;
