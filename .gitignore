@@ -1,3 +1,6 @@
 *.o
 pagerank
 readData
+inverted
+searchPagerank
+searchTfIdf
